@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ianr0bkny/go-sonos"
+	"github.com/jayaras/sonos-agent/config"
 	"github.com/jayaras/sonos-agent/mqttclient"
 	"github.com/jayaras/sonos-agent/songdb"
 )
@@ -67,8 +68,18 @@ func uidHandler(blockID string) {
 
 func main() {
 
+	log.Print("Loading Configuration...")
+
+	c := config.Config{}
+
+	netif := c.GetString("interface", "wlp58s0")
+	playerName := c.GetString("player", "Living Room")
+	mqttConn := c.GetTCPConnection("mqtt_server", "hass.local:1883")
+	mqttBaseTopic := c.GetString("mqtt_base_topic", "homie")
+	nodeName := c.GetString("homie_node", "song-block")
 	log.Print("Starting Sonos Discovery...")
-	mgr, err := sonos.Discover("wlp58s0", "11223")
+
+	mgr, err := sonos.Discover(netif, "11223")
 	if err != nil {
 		log.Print("Error With Discovery: ")
 		log.Fatal(err)
@@ -83,7 +94,7 @@ func main() {
 			panic(err)
 		}
 
-		if a == "Living Room" {
+		if a == playerName {
 			log.Print("Found Player: ")
 			player = s
 		}
@@ -94,7 +105,7 @@ func main() {
 		log.Fatal("No Play Found.")
 	}
 
-	client := mqttclient.NewMQTTClient("tcp://hass.local:1883", "homie", "ABCD", uidHandler)
+	client := mqttclient.NewMQTTClient(mqttConn, mqttBaseTopic, nodeName, uidHandler)
 
 	client.Run()
 

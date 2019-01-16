@@ -1,4 +1,4 @@
-package client
+package mqttclient
 
 import (
 	"log"
@@ -26,7 +26,7 @@ func (m *MQTTClient) onConnect(client MQTT.Client) {
 	}
 }
 
-func (m *MQTTClient) Init() {
+func (m *MQTTClient) Run() {
 
 	opts := MQTT.NewClientOptions().AddBroker(m.broker)
 	opts.SetClientID("sonos-controller")

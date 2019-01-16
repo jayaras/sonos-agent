@@ -4,11 +4,9 @@ import (
 	"log"
 	"time"
 
-	"github.com/jayaras/sonos-agent/client"
-
-	"github.com/ianr0bkny/go-sonos"
-
 	MQTT "github.com/eclipse/paho.mqtt.golang"
+	"github.com/ianr0bkny/go-sonos"
+	"github.com/jayaras/sonos-agent/mqttclient"
 	"github.com/jayaras/sonos-agent/songdb"
 )
 
@@ -97,9 +95,9 @@ func main() {
 		log.Fatal("No Play Found.")
 	}
 
-	client := client.NewMQTTClient("tcp://hass.local:1883", "homie", "ABCD", uidHandler)
+	client := mqttclient.NewMQTTClient("tcp://hass.local:1883", "homie", "ABCD", uidHandler)
 
-	client.Init()
+	client.Run()
 
 	for {
 		time.Sleep(1 * time.Second)

@@ -4,7 +4,6 @@ import (
 	"log"
 	"time"
 
-	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/ianr0bkny/go-sonos"
 	"github.com/jayaras/sonos-agent/mqttclient"
 	"github.com/jayaras/sonos-agent/songdb"
@@ -13,22 +12,22 @@ import (
 var player *sonos.Sonos
 var lastSong string
 
-func uidHandler(client MQTT.Client, msg MQTT.Message) {
+func uidHandler(msg string) {
 
 	db := songdb.NewSongDB("songblocks.json")
 
-	if string(msg.Payload()) == "" {
+	if msg == "" {
 		// stop the song
 		log.Print("Pausing Song")
 		player.Pause(0)
 	} else {
 
-		log.Print("Looking up Block's Song: " + string(msg.Payload()))
+		log.Print("Looking up Block's Song: " + msg)
 
-		foundSong, err := db.Lookup(string(msg.Payload()))
+		foundSong, err := db.Lookup(string(msg))
 
 		if err != nil {
-			log.Println("Could not find song for tag" + string(msg.Payload()))
+			log.Println("Could not find song for tag" + msg)
 
 			sinfo, err := player.GetTransportInfo(0)
 			if err != nil {
@@ -40,7 +39,7 @@ func uidHandler(client MQTT.Client, msg MQTT.Message) {
 				if err != nil {
 					log.Print("Error Fetching Current Position info: ")
 				} else {
-					db.Save(string(msg.Payload()), pinfo.TrackURI)
+					db.Save(msg, pinfo.TrackURI)
 				}
 			}
 

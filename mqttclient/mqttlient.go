@@ -10,7 +10,7 @@ import (
 type MQTTClient struct {
 	broker  string
 	topic   string
-	handler func(client MQTT.Client, msg MQTT.Message)
+	handler func(string)
 }
 
 func (m *MQTTClient) onLost(client MQTT.Client, err error) {
@@ -20,10 +20,14 @@ func (m *MQTTClient) onLost(client MQTT.Client, err error) {
 
 func (m *MQTTClient) onConnect(client MQTT.Client) {
 	log.Print("MQTT Connected.")
-	if token := client.Subscribe(m.topic, 0, m.handler); token.Wait() && token.Error() != nil {
+	if token := client.Subscribe(m.topic, 0, m.callback); token.Wait() && token.Error() != nil {
 		log.Print(token.Error())
 		log.Fatal("MQTT token error onConnect")
 	}
+}
+
+func (m *MQTTClient) callback(client MQTT.Client, msg MQTT.Message) {
+	m.handler(string(msg.Payload()))
 }
 
 func (m *MQTTClient) Run() {
@@ -44,7 +48,7 @@ func (m *MQTTClient) Run() {
 
 }
 
-func NewMQTTClient(broker string, baseTopic string, device string, handler func(client MQTT.Client, msg MQTT.Message)) *MQTTClient {
+func NewMQTTClient(broker string, baseTopic string, device string, handler func(msg string)) *MQTTClient {
 
 	topic := baseTopic + "/" + device + "/rfid/uid"
 	x := &MQTTClient{broker: broker, handler: handler, topic: topic}

@@ -12,22 +12,22 @@ import (
 var player *sonos.Sonos
 var lastSong string
 
-func uidHandler(msg string) {
+func uidHandler(blockID string) {
 
 	db := songdb.NewSongDB("songblocks.json")
 
-	if msg == "" {
+	if blockID == "" {
 		// stop the song
 		log.Print("Pausing Song")
 		player.Pause(0)
 	} else {
 
-		log.Print("Looking up Block's Song: " + msg)
+		log.Print("Looking up Block's Song: " + blockID)
 
-		foundSong, err := db.Lookup(string(msg))
+		foundSong, err := db.Lookup(blockID)
 
 		if err != nil {
-			log.Println("Could not find song for tag" + msg)
+			log.Println("Could not find song for tag" + blockID)
 
 			sinfo, err := player.GetTransportInfo(0)
 			if err != nil {
@@ -39,7 +39,7 @@ func uidHandler(msg string) {
 				if err != nil {
 					log.Print("Error Fetching Current Position info: ")
 				} else {
-					db.Save(msg, pinfo.TrackURI)
+					db.Save(blockID, pinfo.TrackURI)
 				}
 			}
 

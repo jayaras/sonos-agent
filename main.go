@@ -8,6 +8,7 @@ import (
 	"github.com/jayaras/sonos-agent/config"
 	"github.com/jayaras/sonos-agent/mqttclient"
 	"github.com/jayaras/sonos-agent/songdb"
+	"github.com/jayaras/sonos-agent/sonosclient"
 )
 
 var player *sonos.Sonos
@@ -77,37 +78,14 @@ func main() {
 	mqttConn := c.GetTCPConnection("mqtt_server", "hass.local:1883")
 	mqttBaseTopic := c.GetString("mqtt_base_topic", "homie")
 	nodeName := c.GetString("homie_node", "song-block")
-	log.Print("Starting Sonos Discovery...")
+	retryCount := c.GetInt("sonos_retry_count", 4)
 
-	mgr, err := sonos.Discover(netif, "11223")
-	if err != nil {
-		log.Print("Error With Discovery: ")
-		log.Fatal(err)
-	}
+	sonosClient := sonosclient.NewSonosClient(playerName, netif, retryCount)
+	sonosClient.Connect()
+	player = sonosClient.GetSonosPlayer()
 
-	ss := sonos.ConnectAny(mgr, nil, sonos.SVC_ALL)
-
-	for _, s := range ss {
-		a, _, err := s.GetZoneAttributes()
-
-		if err != nil {
-			panic(err)
-		}
-
-		if a == playerName {
-			log.Print("Found Player: ")
-			player = s
-		}
-
-	}
-
-	if player == nil {
-		log.Fatal("No Play Found.")
-	}
-
-	client := mqttclient.NewMQTTClient(mqttConn, mqttBaseTopic, nodeName, uidHandler)
-
-	client.Run()
+	mqttclient := mqttclient.NewMQTTClient(mqttConn, mqttBaseTopic, nodeName, uidHandler)
+	mqttclient.Run()
 
 	for {
 		time.Sleep(1 * time.Second)

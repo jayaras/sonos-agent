@@ -59,7 +59,7 @@ func uidHandler(blockID string) {
 				player.SetAVTransportURI(0, foundSong, "")
 			}
 			// resume current song or start it over if the song went away and you want an 'again'
-			//log.Println("Block was removed and placed back... resuming song.")
+			// log.Println("Block was removed and placed back... resuming song.")
 			player.Play(0, "1")
 			lastSong = foundSong
 		}

@@ -33,7 +33,7 @@ func (s *SonosClient) Connect() error {
 			}
 
 			if a == s.name {
-				log.Print("Found Player: ")
+				log.Print("Found Player: " + s.name)
 				s.player = y
 				return nil
 			}

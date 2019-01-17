@@ -47,7 +47,7 @@ $ INTERFACE=wlan0 PLAYER="Kitchen" MQTT_SERVER=localhost:1883 NODE_NAME=song-blo
 2019/01/16 16:01:37 Loading http://192.168.5.14:1400/xml/MusicServices1.xml
 2019/01/16 16:01:37 Loading http://192.168.5.14:1400/xml/RenderingControl1.xml
 2019/01/16 16:01:37 Loading http://192.168.5.14:1400/xml/AVTransport1.xml
-2019/01/16 16:01:37 Found Player: 
+2019/01/16 16:01:37 Found Player: Kitchen
 2019/01/16 16:01:38 MQTT Connected.
 
 ```

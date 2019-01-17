@@ -77,7 +77,7 @@ func main() {
 	playerName := c.GetString("player", "Living Room")
 	mqttConn := c.GetTCPConnection("mqtt_server", "hass.local:1883")
 	mqttBaseTopic := c.GetString("mqtt_base_topic", "homie")
-	nodeName := c.GetString("homie_node", "song-block")
+	nodeName := c.GetString("node_name", "song-block")
 	retryCount := c.GetInt("sonos_retry_count", 4)
 
 	sonosClient := sonosclient.NewSonosClient(playerName, netif, retryCount)

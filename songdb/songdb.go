@@ -63,21 +63,16 @@ func (db *SongDB) Save(uid string, uri string) error {
 	if err := json.Unmarshal(contents, &songs); err != nil {
 		return err
 	}
-	os.Rename("songblocks.json", "songblocks.json.old")
+	os.Rename(db.dbFilename, db.dbFilename+".old")
 
-	var newSong songBlock
-
-	newSong.UID = uid
-	newSong.URI = uri
-
-	songs[uid] = newSong
+	songs[uid] = songBlock{UID: uid, URI: uri, Added: time.Now()}
 
 	output, err := json.Marshal(&songs)
 
 	if err != nil {
 		log.Print("Error Writing file...")
 	}
-	ioutil.WriteFile("songblocks.json", output, 0644)
+	ioutil.WriteFile(db.dbFilename, output, 0644)
 
 	return nil
 
